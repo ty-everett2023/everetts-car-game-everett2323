@@ -1,0 +1,44 @@
+Detailed Instructions for Implementing the Car Racing Game:
+
+1. Car Class:
+    - __init__(self, x, y, image): 
+        - Initialize the x, y coordinates for the car's position.
+        - Load the image for the car using pygame's image.load function.
+    - draw(self, display):
+        - Use the blit function from pygame to draw the car image on the display at the current x, y coordinates.
+    - move(self, x_change, y_change):
+        - Update the x coordinate by adding x_change and the y coordinate by adding y_change.
+
+2. Obstacle Class:
+    - __init__(self, x, y, speed, image): 
+        - Initialize the x, y coordinates for the obstacle's position.
+        - Set the speed for the obstacle.
+        - Load the image for the obstacle using pygame's image.load function.
+    - draw(self, display):
+        - Use the blit function from pygame to draw the obstacle image on the display at the current x, y coordinates.
+    - move(self):
+        - Update the y coordinate by adding the speed to move the obstacle downwards.
+
+3. Game Class:
+    - __init__(self, display_width, display_height): 
+        - Initialize pygame using pygame.init().
+        - Set the game display mode with the given display_width and display_height using pygame's display.set_mode function.
+        - Create a Car object with initial x, y coordinates and an image file for the car.
+    - spawn_obstacle(self):
+        - Generate a random x position for the obstacle.
+        - Create an Obstacle object with the generated x position, a fixed y position (above the display), a speed, and an image file for the obstacle.
+        - Add the obstacle to the obstacles list.
+    - run(self):
+        - Start a game loop that continues until a QUIT event is detected.
+        - Inside the loop, handle KEYDOWN and KEYUP events to move the car left or right.
+        - Move the obstacles down the screen.
+        - Check for collisions between the car and obstacles, and end the game if a collision is detected.
+
+4. In the __main__ block:
+    - Create a Game object.
+    - Call the run method of the Game object to start the game loop.
+
+5. Additional Notes:
+    - Ensure all necessary images are in the same directory or provide the correct path to them.
+    - For collision detection, compare the x, y coordinates of the car and each obstacle in the obstacles list.
+    - For more advanced functionality, consider adding scoring, levels, and increasing the difficulty by increasing the speed of the obstacles as the game progresses.
