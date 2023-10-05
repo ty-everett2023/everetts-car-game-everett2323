@@ -8,7 +8,11 @@ import sys
 class Car:
     def __init__(self, x, y, image):
         # TODO: Initialize the x, y coordinates and load the image for the car.
-        pass
+        self.x = x
+        self.y = y
+        image = pygame.image.load(image)
+
+
 
     def draw(self, display):
         # TODO: Draw the car on the display at the x, y coordinates.

@@ -1,6 +1,6 @@
 import pytest
 
-from main_game import Game, Car
+from main_game import Game, Car, Obstacle
 
 
 # Defining tests using pytest conventions
