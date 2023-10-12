@@ -1,6 +1,40 @@
-import pygame
+import pygame as pg
 import random
 import sys
+
+
+class Screen:
+    def __init__(self, width, height):
+        self.screen = pg.display.set_mode((width, height))
+        pg.display.set_caption("Everett's derby")
+        logo = pg.image.load('/Users/chrisloxley/everetts-car-game-everett2323/Assets/logo.jpeg')
+        pg.display.set_icon(logo)
+
+    def fill(self, color):
+        self.screen.fill(color)
+
+    def blit(self, image, coordinates):
+        self.screen.blit(image, coordinates)
+
+    def update(self):
+        pg.display.update()
+
+
+class Button:
+    def __init__(self, screen, x, y, width, height, text):
+        self.text = text
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def draw(self):
+        pg.draw.rect(self.screen.screen,(255,255,255),(self.x,self.y,self.width,self.height),6)
+    def is_hover(self,x,y):
+        return pg.Rect(self.x,self.y,self.width,self.height).collidepoint(x,y)
+    def activate(self):
+        pg.draw.rect(self.screen.screen,(155,0,0),(self.x,self.y,self.width,self.height),6)
 
 
 
@@ -10,9 +44,7 @@ class Car:
         # TODO: Initialize the x, y coordinates and load the image for the car.
         self.x = x
         self.y = y
-        image = pygame.image.load(image)
-
-
+        pg.image.load(image)
 
     def draw(self, display):
         # TODO: Draw the car on the display at the x, y coordinates.
