@@ -40,19 +40,14 @@ class Button:
 
 
 class Car:
-    def __init__(self, x, y, image):
+    def __init__(self,screen, image_path, x, y):
         # TODO: Initialize the x, y coordinates and load the image for the car.
         self.x = x
         self.y = y
-        pg.image.load(image)
-
-    def draw(self, display):
-        # TODO: Draw the car on the display at the x, y coordinates.
-        pass
-
-    def move(self, x_change, y_change):
-        # TODO: Update the x, y coordinates of the car.
-        pass
+        self.screen = screen
+        self.image = pg.image.load(image_path)
+    def blit(self):
+        self.screen.blit(self.image,(self.x,self.y))
 
 
 class Obstacle:
@@ -70,9 +65,20 @@ class Obstacle:
 
 
 class Game:
-    def __init__(self, display_width, display_height):
+    def __init__(self):
         # TODO: Initialize pygame, set the display mode, and create a Car object.
-        pass
+        pg.init()
+        pg.mixer.init()
+        self.screen = Screen(798,600)
+        self.everetts_car = Car(self.screen,'/Users/chrisloxley/everetts-car-game-everett2323/Assets/car.png',350,495)
+        self.enemy_cars = [
+            Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car1.jpeg',
+                random.randint(178, 490), 100),
+            Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car2.png',
+                random.randint(178, 490), 100),
+            Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car3.png',
+                random.randint(178, 490), 100)
+        ]
 
     def spawn_obstacle(self):
         # TODO: Generate an obstacle with random x position and add it to the obstacles list.
