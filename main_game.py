@@ -138,7 +138,7 @@ class Game:
             self.screen.update()
 
 
-
+#everett
     def spawn_obstacle(self):
         # TODO: Generate an obstacle with random x position and add it to the obstacles list.
         enemy_car = random.choice(self.enemy_cars)
