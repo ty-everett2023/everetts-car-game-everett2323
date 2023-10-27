@@ -54,15 +54,20 @@ class Car:
 class Obstacle:
     def __init__(self, x, y, speed, image):
         # TODO: Initialize the x, y coordinates, speed, and load the image for the obstacle.
-        pass
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.image = image
 
     def draw(self, display):
-        # TODO: Draw the obstacle on the display at the x, y coordinates.
-        pass
+        display.blit(self.image,(self.x, self.y))
+
 
     def move(self):
         # TODO: Move the obstacle downwards by updating the y coordinate.
-        pass
+        self.y += self.speed
+    def has_collisoin(self,car):
+        pg.Rect(self.x, self.y,self.image.get_width(),self.image.get_height()).colliderect(pg.Rect(car.x, car.y,car.image.get_width(),car.image.get_height()))
 
 
 class Game:
@@ -81,6 +86,7 @@ class Game:
             Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car3.png',
                 random.randint(178, 490), 100)
         ]
+        self.obstacles = []
         self.intro_font = pg.font.Font("freesandsbold.ttf", 38)
         self.play_button = Button(self.screen, 60, 440, 175, 50, "Play")
         self.instruction_button = Button(self.screen, 265, 440, 300, 50, "Instructions")
@@ -126,7 +132,6 @@ class Game:
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         click = True
-
             self.screen.update()
 
 
