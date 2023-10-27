@@ -28,6 +28,8 @@ class Button:
         self.y = y
         self.width = width
         self.height = height
+        self.font = pg.font.Font(None,32)
+        self.text_surf = self.font.render(self.text,True,(255,255,255))
 
     def draw(self):
         pg.draw.rect(self.screen.screen, (255, 255, 255), (self.x, self.y, self.width, self.height), 6)
@@ -66,7 +68,7 @@ class Obstacle:
     def move(self):
         # TODO: Move the obstacle downwards by updating the y coordinate.
         self.y += self.speed
-    def has_collisoin(self,car):
+    def has_collision(self,car):
         pg.Rect(self.x, self.y,self.image.get_width(),self.image.get_height()).colliderect(pg.Rect(car.x, car.y,car.image.get_width(),car.image.get_height()))
 
 
@@ -87,7 +89,8 @@ class Game:
                 random.randint(178, 490), 100)
         ]
         self.obstacles = []
-        self.intro_font = pg.font.Font("freesandsbold.ttf", 38)
+        font_name = pg.font.match_font('arial')
+        self.intro_font = pg.font.Font(font_name, 38)
         self.play_button = Button(self.screen, 60, 440, 175, 50, "Play")
         self.instruction_button = Button(self.screen, 265, 440, 300, 50, "Instructions")
         self.about_button = Button(self.screen, 600, 440, 165, 50, "About")
@@ -138,13 +141,23 @@ class Game:
 
     def spawn_obstacle(self):
         # TODO: Generate an obstacle with random x position and add it to the obstacles list.
-        pass
+        enemy_car = random.choice(self.enemy_cars)
+        obstacle = Obstacle(enemy_car.x, enemy_car.y,5,enemy_car.image)
+        self.obstacles.append(obstacle)
 
     def run(self):
         # TODO: Start the game loop, handle events, move the car and obstacles, and check for collisions.
-        pass
+        self.intro_screen()
+        run = True
+        while run:
+            self.screen.fill((0,0,0))
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    run = False
+            self.screen.update()
 
 
 if __name__ == '__main__':
     # TODO: Create a Game object and start the game by calling the run method.
-    pass
+    game = Game()
+    game.run()
