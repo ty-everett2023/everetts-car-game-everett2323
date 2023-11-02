@@ -28,11 +28,14 @@ class Button:
         self.y = y
         self.width = width
         self.height = height
-        self.font = pg.font.Font(None,32)
-        self.text_surf = self.font.render(self.text,True,(255,255,255))
+        self.font = pg.font.Font(None, 32)
+        self.text_surf = self.font.render(self.text, True, (255, 255, 255))
 
     def draw(self):
         pg.draw.rect(self.screen.screen, (255, 255, 255), (self.x, self.y, self.width, self.height), 6)
+        text_x = self.x + (self.width - self.text_surf.get_width()) // 2
+        text_y = self.y + (self.height - self.text_surf.get_height()) // 2
+        self.screen.screen.blit(self.text_surf, (text_x, text_y))
 
     def is_hover(self, x, y):
         return pg.Rect(self.x, self.y, self.width, self.height).collidepoint(x, y)
@@ -62,14 +65,15 @@ class Obstacle:
         self.image = image
 
     def draw(self, display):
-        display.blit(self.image,(self.x, self.y))
-
+        display.blit(self.image, (self.x, self.y))
 
     def move(self):
         # TODO: Move the obstacle downwards by updating the y coordinate.
         self.y += self.speed
-    def has_collision(self,car):
-        pg.Rect(self.x, self.y,self.image.get_width(),self.image.get_height()).colliderect(pg.Rect(car.x, car.y,car.image.get_width(),car.image.get_height()))
+
+    def has_collision(self, car):
+        pg.Rect(self.x, self.y, self.image.get_width(), self.image.get_height()).colliderect(
+            pg.Rect(car.x, car.y, car.image.get_width(), car.image.get_height()))
 
 
 class Game:
@@ -95,6 +99,19 @@ class Game:
         self.instruction_button = Button(self.screen, 265, 440, 300, 50, "Instructions")
         self.about_button = Button(self.screen, 600, 440, 165, 50, "About")
 
+    def countdown(self):
+        font = pg.font.Font(None, 72)
+        count_nums = [3, 2, 1]
+        for counter in count_nums:
+            self.screen.fill((0, 0, 0))
+            num_surface = font.render(str(counter), True, (255, 255, 255))
+            num_rect = num_surface.get_rect(
+                center=(self.screen.screen.get_width() / 2, self.screen.screen.get_height() / 2))
+            self.screen.screen.blit(num_surface, num_rect.topleft)
+            self.screen.update()
+            pg.time.delay(1000)
+        self.run()
+
     def intro_img(self, x, y):
         intro = pg.image.load("/Users/chrisloxley/everetts-car-game-everett2323/Assets/intro.png")
         self.screen.blit(intro, (x, y))
@@ -114,6 +131,13 @@ class Game:
 
             x, y = pg.mouse.get_pos()
             click = False
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    run=False
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
 
             if self.play_button.is_hover(x, y):
                 self.play_button.activate()
@@ -137,12 +161,10 @@ class Game:
                         click = True
             self.screen.update()
 
-
-#everett
     def spawn_obstacle(self):
         # TODO: Generate an obstacle with random x position and add it to the obstacles list.
         enemy_car = random.choice(self.enemy_cars)
-        obstacle = Obstacle(enemy_car.x, enemy_car.y,5,enemy_car.image)
+        obstacle = Obstacle(enemy_car.x, enemy_car.y, 5, enemy_car.image)
         self.obstacles.append(obstacle)
 
     def run(self):
@@ -150,7 +172,7 @@ class Game:
         self.intro_screen()
         run = True
         while run:
-            self.screen.fill((0,0,0))
+            self.screen.fill((0, 0, 0))
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     run = False
