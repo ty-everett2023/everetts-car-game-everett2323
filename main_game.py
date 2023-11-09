@@ -6,6 +6,8 @@ import sys
 class Screen:
     def __init__(self, width, height):
         self.screen = pg.display.set_mode((width, height))
+        self.width = width
+        self.height = height
         pg.display.set_caption("Everett's derby")
         logo = pg.image.load('/Users/chrisloxley/everetts-car-game-everett2323/Assets/logo.jpeg')
         pg.display.set_icon(logo)
@@ -19,6 +21,11 @@ class Screen:
     def update(self):
         pg.display.update()
 
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
 
 class Button:
     def __init__(self, screen, x, y, width, height, text):
@@ -44,16 +51,30 @@ class Button:
         pg.draw.rect(self.screen.screen, (155, 0, 0), (self.x, self.y, self.width, self.height), 6)
 
 
-class Car:
+class Car(pg.sprite.Sprite):
     def __init__(self, screen, image_path, x, y):
         # TODO: Initialize the x, y coordinates and load the image for the car.
-        self.x = x
-        self.y = y
+        super().__init__()
+        original_img = pg.image.load(image_path).convert_alpha()
         self.screen = screen
-        self.image = pg.image.load(image_path)
-
+        self.image = pg.transform.rotate(original_img, -90)
+        self.rect = self.image.get_rect(center=(x,y))
+        self.speed = 200
+        self.velocity = pg.math.Vector2(0,0)
+        self.acceleration = .5
+    def update(self, delta_time, move_left, move_right):
+        if move_left:
+            self.velocity.x = max(self.velocity.x - self.acceleration, -self.speed)
+        elif move_right:
+            self.velocity.x = max(self.velocity.x + self.acceleration, self.speed)
+        else:
+            self.velocity.x *= .9
+        if abs(self.velocity.x)<1 and (move_left or move_right):
+            self.velocity.x = -self.speed if move_left else self.speed
+        self.rect.x += self.velocity.x * delta_time
+        self.rect.clamp_ip(self.screen.screen.get_rect())
     def blit(self):
-        self.screen.blit(self.image, (self.x, self.y))
+        self.screen.screen.blit(self.image, self.rect.topleft)
 
 
 class Obstacle:
