@@ -78,23 +78,21 @@ class Car(pg.sprite.Sprite):
 
 
 class Obstacle:
-    def __init__(self, x, y, speed, image):
+    def __init__(self,screen, image, x, y ):
         # TODO: Initialize the x, y coordinates, speed, and load the image for the obstacle.
-        self.x = x
-        self.y = y
-        self.speed = speed
-        self.image = image
+        self.screen = screen
+        self.image = pg.image.load(image).convert_alpha()
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.speed = 100
 
-    def draw(self, display):
-        display.blit(self.image, (self.x, self.y))
+    def update(self, delta_time):
+        self.rect.y += self.speed * delta_time
 
-    def move(self):
-        # TODO: Move the obstacle downwards by updating the y coordinate.
-        self.y += self.speed
+    def blit(self):
+        self.screen.screen.blit(self.image, self.rect.topleft)
 
-    def has_collision(self, car):
-        pg.Rect(self.x, self.y, self.image.get_width(), self.image.get_height()).colliderect(
-            pg.Rect(car.x, car.y, car.image.get_width(), car.image.get_height()))
+    def has_collision(self, car_rect):
+        return self.rect.colliderect(car_rect)
 
 
 class Game:
@@ -103,14 +101,14 @@ class Game:
         pg.init()
         pg.mixer.init()
         self.screen = Screen(798, 600)
-        self.everetts_car = Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car.png', 350,
+        self.everetts_car = Car(self.screen, 'Assets/car.png', 350,
                                 495)
         self.enemy_cars = [
-            Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car1.jpeg',
+            Car(self.screen, 'Assets/car1.jpeg',
                 random.randint(178, 490), 100),
-            Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car2.png',
+            Car(self.screen, 'Assets/car2.png',
                 random.randint(178, 490), 100),
-            Car(self.screen, '/Users/chrisloxley/everetts-car-game-everett2323/Assets/car3.png',
+            Car(self.screen, 'Assets/car3.png',
                 random.randint(178, 490), 100)
         ]
         self.obstacles = []
@@ -119,6 +117,11 @@ class Game:
         self.play_button = Button(self.screen, 60, 440, 175, 50, "Play")
         self.instruction_button = Button(self.screen, 265, 440, 300, 50, "Instructions")
         self.about_button = Button(self.screen, 600, 440, 165, 50, "About")
+        self.city_1 = pg.image.load("Assets/city_1.png")
+        self.city_2 = pg.image.load("Assets/city_2.png")
+        self.city_3 = pg.image.load("Assets/city_3.png")
+        self.current_city = self.city_1
+        self.everetts_car.x = (self.screen.get_width() / 2) - (self.everetts_car.image.get_width() / 2)
 
     def countdown(self):
         font = pg.font.Font(None, 72)
@@ -134,11 +137,11 @@ class Game:
         self.run()
 
     def intro_img(self, x, y):
-        intro = pg.image.load("/Users/chrisloxley/everetts-car-game-everett2323/Assets/intro.png")
+        intro = pg.image.load("Assets/intro.png")
         self.screen.blit(intro, (x, y))
 
     def about_img(self, x, y):
-        about = pg.image.load("/Users/chrisloxley/everetts-car-game-everett2323/Assets/About.png")
+        about = pg.image.load("Assets/About.png")
         self.screen.blit(about, (x, y))
 
     def intro_screen(self):
@@ -174,33 +177,46 @@ class Game:
                 self.about_button.activate()
                 if click:
                     self.about_img(0, 0)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    run = False
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
-            self.screen.update()
+            pg.display.flip()
 
     def spawn_obstacle(self):
         # TODO: Generate an obstacle with random x position and add it to the obstacles list.
-        enemy_car = random.choice(self.enemy_cars)
-        obstacle = Obstacle(enemy_car.x, enemy_car.y, 5, enemy_car.image)
+        obstacle_x = random.randint(178, 490)
+        obstacle_image = random.choice(["Assets/car1.jpeg", "Assets/car2.png", "Assets/car2.png"])
+        obstacle = Obstacle(self.screen, obstacle_image, obstacle_x, -100)
         self.obstacles.append(obstacle)
 
     def run(self):
         # TODO: Start the game loop, handle events, move the car and obstacles, and check for collisions.
-        self.intro_screen()
+        clock = pg.time.Clock()
+        move_left = False
+        move_right = False
         run = True
         while run:
-            self.screen.fill((0, 0, 0))
+            delta_time = clock.tick(60) / 1000.0
+            self.screen.fill((0,0,0))
+            self.screen.blit(self.current_city, (0,0))
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     run = False
-            self.screen.update()
-
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_LEFT:
+                        move_left = True
+                    elif event.key == pg.K_RIGHT:
+                        move_right = True
+                elif event.type == pg.KEYUP:
+                    if event.key == pg.K_LEFT:
+                        move_left = False
+                    if event.key == pg.K_RIGHT:
+                        move_right = False
+            self.everetts_car.update(delta_time, move_left, move_right)
+            self.everetts_car.blit()
+            for obstacle in self.obstacles:
+                obstacle.update(delta_time)
+                obstacle.blit()
+            pg.display.flip()
 
 if __name__ == '__main__':
     # TODO: Create a Game object and start the game by calling the run method.
     game = Game()
-    game.run()
+    game.intro_screen()
