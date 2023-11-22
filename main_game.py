@@ -62,6 +62,8 @@ class Car(pg.sprite.Sprite):
         self.speed = 200
         self.velocity = pg.math.Vector2(0,0)
         self.acceleration = .5
+        self.rect.bottomleft = (0, self.screen.get_height())
+
     def update(self, delta_time, move_left, move_right):
         if move_left:
             self.velocity.x = max(self.velocity.x - self.acceleration, -self.speed)
@@ -73,12 +75,14 @@ class Car(pg.sprite.Sprite):
             self.velocity.x = -self.speed if move_left else self.speed
         self.rect.x += self.velocity.x * delta_time
         self.rect.clamp_ip(self.screen.screen.get_rect())
+
     def blit(self):
         self.screen.screen.blit(self.image, self.rect.topleft)
 
 
-class Obstacle:
+class Obstacle(pg.sprite.Sprite):
     def __init__(self,screen, image, x, y ):
+        super().__init__()
         # TODO: Initialize the x, y coordinates, speed, and load the image for the obstacle.
         self.screen = screen
         self.image = pg.image.load(image).convert_alpha()
@@ -194,8 +198,8 @@ class Game:
         run = True
         while run:
             delta_time = clock.tick(60) / 1000.0
-            self.screen.fill((0,0,0))
-            self.screen.blit(self.current_city, (0,0))
+            scaled_background = pg.transform.scale(self.current_city,(self.screen.get_width(), self.screen.get_height()))
+            self.screen.blit(scaled_background, (0,0))
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     run = False
@@ -215,6 +219,7 @@ class Game:
                 obstacle.update(delta_time)
                 obstacle.blit()
             pg.display.flip()
+
 
 if __name__ == '__main__':
     # TODO: Create a Game object and start the game by calling the run method.
